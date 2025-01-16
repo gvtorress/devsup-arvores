@@ -17,6 +17,31 @@ export default class GenericTree {
     return this.#size === 0;
   }
 
+  elements = () => {
+    const list = [];
+    this.#collectElements(list, this.#root);
+    return list;
+  }
+
+  #collectElements = (list, node) => {
+    list.push(node.element());
+    for (const child of node._getChildren()) {
+      this.#collectElements(list, child);
+    }
+  }
+
+  positions = () => {
+    const list = [];
+    this.#collectPositions(list, this.#root);
+    return list;
+  }
+
+  #collectPositions = (list, node) => {
+    for (const child of node._getChildren()) {
+      this.#collectPositions(list, child);
+    }
+  }
+
   #validate = (position) => {
     if (!(position instanceof Node)) throw new Error("Invalid position type");
     if (position._getParent() === position) throw new Error("Removed node");
