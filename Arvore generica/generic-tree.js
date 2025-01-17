@@ -42,6 +42,20 @@ export default class GenericTree {
     }
   }
 
+  find = (element) => {
+    return this.#findRecursive(this.#root, element);
+  }
+
+  #findRecursive = (node, target) => {
+    if (!node) return null;
+    if (node.element() === target) return node; 
+    for (const child of node._getChildren()) {
+      const found = this.#findRecursive(child, target);
+      if (found) return found;
+    }
+    return null;
+  }
+
   #validate = (position) => {
     if (!(position instanceof Node)) throw new Error("Invalid position type");
     if (position._getParent() === position) throw new Error("Removed node");
