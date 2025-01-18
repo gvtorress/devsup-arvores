@@ -37,6 +37,7 @@ export default class GenericTree {
   }
 
   #collectPositions = (list, node) => {
+    list.push(node);
     for (const child of node._getChildren()) {
       this.#collectPositions(list, child);
     }
@@ -84,5 +85,55 @@ export default class GenericTree {
 
   root = () => {
     return this.#root;
+  }
+
+  isExternal = (position) => {
+    const node = this.#validate(position);
+    return node._isLeaf();
+  }
+
+  isRoot = (position) => {
+    const node = this.#validate(position);
+    return node === this.#root;
+  }
+
+  parent = (position) => {
+    const node = this.#validate(position);
+    // if (node === this.#root) throw new Error("Passed node is root");
+    return node._getParent();
+  }
+
+  replace = (position, element) => {
+    const node = this.#validate(position);
+    node._setElement(element);
+  }
+
+  remove = (position) => {
+    const node = this.#validate(position);
+    if (node === this.#root) {
+      this.#root = null;
+      this.#size = 0;
+    } else {
+      const parent = node._getParent();
+      parent._removeChild(node);
+    }
+
+    this.#size -= this.#subtreeSize(node);
+    this.#markAsRemoved(node);
+  }
+
+  #markAsRemoved = (node) => {
+    node._setParent(node);
+    for (const child of node._getChildren()) {
+      this.#markAsRemoved(child);
+    }
+  }
+
+  #subtreeSize = (node) => {
+    let childrenSize = 0;
+    for (const child of node._getChildren()) {
+      childrenSize += this.#subtreeSize(child)
+    }
+    return childrenSize++;
   }
 }
