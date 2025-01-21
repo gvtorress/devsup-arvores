@@ -74,6 +74,9 @@ for (const pos of myTree.positions()) {
   console.log(pos);
 }
 
+console.log("\nPRINT BFS:");
+printBfs(myTree);
+
 const pos5 = myTree.find("Metodos");
 if (pos5) {
   myTree.remove(pos5);
@@ -89,6 +92,19 @@ function printRecursive(position, tree, depth) {
   console.log(`${'\t'.repeat(depth)}${position.element()}`);
   for (const child of tree.children(position)) {
     printRecursive(child, tree, depth + 1);
+  }
+}
+
+function printBfs(tree) {
+  if (tree.isEmpty()) return;
+
+  const queue = [];
+  queue.push(tree.root());
+
+  while (queue.length > 0) {
+    const position = queue.shift();
+    console.log(position.element());
+    queue.push(...tree.children(position));
   }
 }
 
