@@ -51,6 +51,32 @@ export class BinarySearchTreeSet {
     }
   }
 
+  remove = (key) => {
+    if (!key) throw new Error("Invalid key");
+
+    let nodeToRemove = this.#findKeyLocation(this.#root, key);
+    if (nodeToRemove.isSentinel()) return false;
+
+    if (!nodeToRemove.left.isSentinel() && !nodeToRemove.right.isSentinel()) {
+      const sucessor = this.#findMin(nodeToRemove.right);
+      nodeToRemove.key = sucessor.key;
+      nodeToRemove = sucessor;
+    }
+
+    let child = nodeToRemove.left.isSentinel() ? nodeToRemove.right : nodeToRemove.left;
+    child.parent = nodeToRemove.parent;
+    if (!nodeToRemove.parent) {
+      this.#root = child;
+    } else if (nodeToRemove === nodeToRemove.parent.left) {
+      nodeToRemove.parent.left = child;
+    } else {
+      nodeToRemove.parent.right = child;
+    }
+
+    this.#size--;
+    return true;
+  }
+
   #findKeyLocation = (node, key) => {
     while (!node.isSentinel()) {
       if (key === node.key) return node;
@@ -61,6 +87,14 @@ export class BinarySearchTreeSet {
       }
     }
     
+    return node;
+  }
+
+  #findMin(node) {
+    while (!node.left.isSentinel()) {
+      node = node.left;
+    }
+
     return node;
   }
 
@@ -81,6 +115,29 @@ export class BinarySearchTreeSet {
       keyList.push(node.key);
       this.#collectKeys(node.right, keyList)
     }
+  }
+
+  union = (otherTree) => {
+    let result = new BinarySearchTreeSet();
+    this.keys().forEach((key) => result.add(key));
+    otherTree.keys().forEach((key) => result.add(key));
+    return result;
+  }
+
+  intersection = (otherTree) => {
+    let result = new BinarySearchTreeSet();
+    this.keys().forEach((key) => {
+      if (otherTree.contains(key)) result.add(key);
+    });
+    return result;
+  }
+
+  difference = (otherTree) => {
+    let result = new BinarySearchTreeSet();
+    this.keys().forEach((key) => {
+      if (!otherTree.contains(key)) result.add(key);
+    });
+    return result;
   }
 
   toString = () => {
